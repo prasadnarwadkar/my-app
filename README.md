@@ -1,8 +1,14 @@
+# What does this app demo?
+
+It demoes the use of ReactJS view (component) to be able to use ASP.NET Core Web API endpoints to load data asynchronously. 
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
+
+You can also run `npm start` to run the app. 
 
 In the project directory, you can run:
 
