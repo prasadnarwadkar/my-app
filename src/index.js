@@ -3,10 +3,11 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import CommentBox from './App';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <CommentBox initialUserData={[]} initialData={[]} accessToken = "" />
   </React.StrictMode>,
   document.getElementById('root')
 );
