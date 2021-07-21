@@ -1,16 +1,31 @@
 import logo from './logo.svg';
 import './App.css';
-import {React, Component} from 'react';
+import { React, Component } from 'react';
+
+class Results extends Component {
+	render() {
+		return (
+			<div id="loadingLabel">
+				<h5>Loading...</h5>
+			</div>
+		);
+	}
+}
 
 class CommentBox extends Component {
-	state = { 
-				data: this.props.initialData, 
-				userData: this.props.initialUserData,
-				accessToken : this.props.accessToken
-			};
+	state = {
+		data: this.props.initialData,
+		userData: this.props.initialUserData,
+		accessToken: this.props.accessToken,
+		showLoading : false
+	};
+
+	
 
 	getTokenAndCallAPI = async () => {
 		console.log("Loading data...");
+		this.setState({ showLoading: true });
+		window.setTimeout(function () { }, 1000);
 		// Get access token to the API. 
 		var myHeaders = new Headers();
 		myHeaders.append("Content-Type", "text/plain");
@@ -26,13 +41,12 @@ class CommentBox extends Component {
 
 		var userData2;
 
-		if (this.state.accessToken.length == 0)
-		{
+		if (this.state.accessToken.length == 0) {
 			const token = await fetch("http://localhost/disha2adminapi/api/ApplicationUser/GetToken?userName=phonixadmin&password=Admin_123", requestOptions)
 				.then(response => response.text())
 				.catch(error => console.log('error', error));
 
-			
+
 
 			console.log("Token response: " + token);
 
@@ -47,18 +61,20 @@ class CommentBox extends Component {
 
 
 		fetch("http://localhost/disha2adminapi/api/applicationuser/getinfolist", { headers, })
-		.then(response => response.text())
+			.then(response => response.text())
 			.then(result => {
 				//console.log(result);
 				userData2 = result;
-				this.setState({ userData: JSON.parse(userData2) });
-
+				this.setState({ userData: JSON.parse(userData2), showLoading: false });
+				
 			})
 			.catch(error => console.log('error', error));
 	}
 
 	loadCommentsFromServer = async () => {
+
 		await this.getTokenAndCallAPI();
+
 	};
 
 	handleCommentSubmit = comment => {
@@ -95,11 +111,15 @@ class CommentBox extends Component {
 
 	render() {
 		return (
-			<div className="commentBox">
-				<h3>List of Users</h3>
+			<div className="container">
+				<div className="row">
+					{this.state.showLoading ? <Results /> : null}
+				</div>
+				<div className="row">
 
-				<UserList userData={this.state.userData} />
-
+					<UserList userData={this.state.userData} />
+				</div>
+				
 			</div>
 		);
 	}
@@ -131,24 +151,27 @@ class UserList extends Component {
 		const userData = this.props.userData.map(({ name, firstName, lastName, email, mobileNo, userId }) => ({ name, firstName, lastName, email, mobileNo }));
 
 		return (
-			<table className="table-bordered table-striped">
-				<thead>
-					<tr style={{ fontWeight: "bold" }}>
-						<td>Name</td>
-						<td>Mobile</td>
-						<td>Email</td>
-					</tr>
-				</thead>
-				<tbody>
-					{userData.map((row, index) => (
-						<tr key={index}>
-							<td>{row.name}</td>
-							<td>{row.mobileNo}</td>
-							<td>{row.email}</td>
+			<div className="row">
+				<h3>List of Users</h3>
+				<table className="table-bordered table-striped">
+					<thead>
+						<tr style={{ fontWeight: "bold" }}>
+							<td>Name</td>
+							<td>Mobile</td>
+							<td>Email</td>
 						</tr>
-					))}
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						{userData.map((row, index) => (
+							<tr key={index}>
+								<td>{row.name}</td>
+								<td>{row.mobileNo}</td>
+								<td>{row.email}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
 		)
 	}
 }
@@ -251,24 +274,24 @@ class User extends Component {
 
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React faster
-        </a>
-      </header>
-    </div>
-  );
+	return (
+		<div className="App">
+			<header className="App-header">
+				<img src={logo} className="App-logo" alt="logo" />
+				<p>
+					Edit <code>src/App.js</code> and save to reload.
+				</p>
+				<a
+					className="App-link"
+					href="https://reactjs.org"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					Learn React faster
+				</a>
+			</header>
+		</div>
+	);
 }
 
 export default CommentBox;

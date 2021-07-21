@@ -1,13 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+
 import reportWebVitals from './reportWebVitals';
 import CommentBox from './App';
+import Welcome from './App';
 
 ReactDOM.render(
   <React.StrictMode>
-    <CommentBox initialUserData={[]} initialData={[]} accessToken = "" />
+    
+    <CommentBox initialUserData={[]} initialData={[]} accessToken = "" pollInterval="5000"/>
   </React.StrictMode>,
   document.getElementById('root')
 );
