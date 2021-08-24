@@ -1,6 +1,31 @@
 import logo from './logo.svg';
-import './App.css';
+// import './App.css';
 import { React, Component } from 'react';
+import {
+	BrowserRouter as Router,
+	Switch,
+	Route,
+	Link
+} from "react-router-dom";
+
+
+const routes = [
+	{
+		path: "/",
+		exact: true,
+		sidebar: () => <div></div>,
+		main: () => <h2>Home</h2>
+	},
+
+	{
+		path: "/users",
+		sidebar: () => <div></div>,
+		main: () => <div>
+
+			<UserList initialUserData={[]} initialData={[]} userData={[]} accessToken={""} pollInterval={"5000"} />
+		</div>
+	}
+];
 
 class Results extends Component {
 	render() {
@@ -12,15 +37,121 @@ class Results extends Component {
 	}
 }
 
+class Dummy extends Component {
+	render() {
+		return (
+			<div id="dummyLabel">
+				<h5>Dummy</h5>
+			</div>
+		);
+	}
+}
+
 class CommentBox extends Component {
 	state = {
 		data: this.props.initialData,
 		userData: this.props.initialUserData,
 		accessToken: this.props.accessToken,
-		showLoading : false
+		showLoading: false
 	};
 
-	
+	componentDidMount() {
+		
+	}
+
+	render() {
+		
+		return (
+
+			<Router>
+				<div>
+					<nav className="navbar navbar-expand-md bg-dark navbar-dark">
+
+						<a className="navbar-brand" href="#">ePIS Prototype</a>
+
+
+						<button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+							<span className="navbar-toggler-icon"></span>
+						</button>
+						<div className="collapse navbar-collapse" id="collapsibleNavbar">
+							<ul className="navbar-nav">
+								<li className="navbar-item">
+									<Link className="nav-link" to="/">Home</Link>
+								</li>
+
+								<li className="navbar-item">
+									<Link className="nav-link" to="/users">Users</Link>
+								</li>
+							</ul>
+						</div>
+					</nav>
+
+					<Switch>
+						{routes.map((route, index) => (
+							// You can render a <Route> in as many places
+							// as you want in your app. It will render along
+							// with any other <Route>s that also match the URL.
+							// So, a sidebar or breadcrumbs or anything else
+							// that requires you to render multiple things
+							// in multiple places at the same URL is nothing
+							// more than multiple <Route>s.
+							<Route
+								key={index}
+								path={route.path}
+								exact={route.exact}
+								children={<route.sidebar />}
+							/>
+						))}
+					</Switch>
+				</div>
+
+				<div style={{ flex: 1, padding: "10px" }}>
+					<Switch>
+						{routes.map((route, index) => (
+							// Render more <Route>s with the same paths as
+							// above, but different components this time.
+							<Route
+								key={index}
+								path={route.path}
+								exact={route.exact}
+								children={<route.main />}
+							/>
+						))}
+					</Switch>
+				</div>
+
+
+			</Router>
+		);
+	}
+}
+
+class Welcome extends Component {
+	render() {
+		return <h1>Hello, {this.props.name}</h1>;
+	}
+}
+
+class CommentList extends Component {
+	render() {
+		var commentNodes = this.props.data.map(function (comment) {
+			return (
+				<Comment author={comment.author} key={comment.id}>
+					{comment.text}
+				</Comment>
+			);
+		});
+		return <div className="commentList">{commentNodes}</div>;
+	}
+}
+
+class UserList extends Component {
+	state = {
+		data: this.props.initialData,
+		userData: this.props.initialUserData,
+		accessToken: this.props.accessToken,
+		showLoading: false
+	};
 
 	getTokenAndCallAPI = async () => {
 		console.log("Loading data...");
@@ -66,7 +197,7 @@ class CommentBox extends Component {
 				//console.log(result);
 				userData2 = result;
 				this.setState({ userData: JSON.parse(userData2), showLoading: false });
-				
+
 			})
 			.catch(error => console.log('error', error));
 	}
@@ -102,56 +233,15 @@ class CommentBox extends Component {
 
 	componentDidMount() {
 		window.setInterval(this.loadCommentsFromServer, this.props.pollInterval);
-
-
-
-
-
 	}
 
 	render() {
+		const userData = this.state.userData.map(({ name, firstName, lastName, email, mobileNo, userId }) => ({ name, firstName, lastName, email, mobileNo }));
+
 		return (
 			<div className="container">
-				<div className="row">
-					{this.state.showLoading ? <Results /> : null}
-				</div>
-				<div className="row">
-
-					<UserList userData={this.state.userData} />
-				</div>
-				
-			</div>
-		);
-	}
-}
-
-class Welcome extends Component {
-	render() {
-		return <h1>Hello, {this.props.name}</h1>;
-	}
-}
-
-class CommentList extends Component {
-	render() {
-		var commentNodes = this.props.data.map(function (comment) {
-			return (
-				<Comment author={comment.author} key={comment.id}>
-					{comment.text}
-				</Comment>
-			);
-		});
-		return <div className="commentList">{commentNodes}</div>;
-	}
-}
-
-class UserList extends Component {
-
-
-	render() {
-		const userData = this.props.userData.map(({ name, firstName, lastName, email, mobileNo, userId }) => ({ name, firstName, lastName, email, mobileNo }));
-
-		return (
 			<div className="row">
+				<div className="col-md-8">
 				<h3>List of Users</h3>
 				<table className="table-bordered table-striped">
 					<thead>
@@ -171,6 +261,8 @@ class UserList extends Component {
 						))}
 					</tbody>
 				</table>
+				</div>
+			</div>
 			</div>
 		)
 	}
